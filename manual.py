@@ -14,10 +14,9 @@ from langchain_chroma import Chroma
 
 
 class RAGPipeline:
-    def __init__(self, model_name="llama2"):
+    def __init__(self, model_name="mistral"):
         """
         Initialize RAG Pipeline
-        model_name: 'llama2', 'mistral', 'codellama', etc.
         """
         self.model_name = model_name
         self.vectorstore = None
@@ -27,8 +26,7 @@ class RAGPipeline:
         self.llm = OllamaLLM(
             model=model_name,
             temperature=0.1,
-            # Adjust these based on your hardware
-            num_predict=512,  # Max tokens to generate
+            num_predict=512,
         )
         
         # Initialize embeddings (using free HuggingFace model)
@@ -201,35 +199,6 @@ def main():
             print(f"❌ Error: {e}")
 
 
-# Example usage functions
-def quick_setup_example():
-    """
-    Quick setup example for testing
-    """
-    # Initialize
-    rag = RAGPipeline(model_name="llama2")
-    
-    # Load PDF (replace with your path)
-    chunks = rag.load_and_process_pdf("manual.pdf")
-    
-    # Create vector store
-    rag.create_vectorstore(chunks)
-    
-    # Setup QA
-    rag.setup_qa_chain()
-    
-    # Test queries
-    test_questions = [
-        "What are the main components?",
-        "How do I troubleshoot issues?",
-        "What are the safety precautions?"
-    ]
-    
-    for question in test_questions:
-        answer, _ = rag.query(question)
-        print(f"\nQ: {question}")
-        print(f"A: {answer}")
-
 
 if __name__ == "__main__":
     # Run main interactive loop
@@ -237,31 +206,3 @@ if __name__ == "__main__":
     
     # Or run quick example:
     # quick_setup_example()
-
-
-"""
-SETUP INSTRUCTIONS:
-
-1. Install Ollama:
-   - Go to https://ollama.ai/download
-   - Download and install for your OS
-   
-2. Pull the model:
-   ollama pull llama2
-   # or
-   ollama pull mistral
-
-3. Install Python packages:
-   pip install langchain chromadb ollama pypdf sentence-transformers
-
-4. Replace "your_manual.pdf" with your actual file path (.pdf or .html)
-
-5. Run the script!
-
-TIPS:
-- First run will be slower due to embedding creation
-- Subsequent runs load the existing vector store quickly
-- Adjust chunk_size and chunk_overlap based on your manual structure
-- Try different values of k (number of retrieved docs) for better results
-- Use mistral if you want a smaller, faster model
-"""
